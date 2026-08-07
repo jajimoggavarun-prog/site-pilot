@@ -854,7 +854,7 @@
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const stackCards = gsap.utils.toArray('#work .stack-card');
-    if (stackCards.length && !reduceMotion) {
+    if (stackCards.length && !reduceMotion && window.matchMedia('(min-width: 768px)').matches) {
       gsap.set(stackCards, { yPercent: 100, opacity: 1, scale: 1, filter: 'blur(0px)' });
       gsap.set(stackCards[0], { yPercent: 0 });
 
