@@ -152,6 +152,68 @@
   ::-webkit-scrollbar{ width:10px; } ::-webkit-scrollbar-track{ background:var(--bg); } ::-webkit-scrollbar-thumb{ background:#232838; border-radius:8px; }
 
   @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; } }
+
+  /* Responsive layout */
+  html { scroll-padding-top: 4.5rem; }
+
+  @media (max-width: 1023px) {
+    .stack-card { width: min(920px, calc(100vw - 3rem)); }
+  }
+
+  @media (max-width: 767px) {
+    body { overflow-x: hidden; }
+    #nav .max-w-\[1320px\] { height: 3.75rem; padding-inline: 1rem; }
+    #mobile-menu { padding: 1rem; gap: .9rem; }
+    #menu-btn { min-width: 2.75rem; min-height: 2.75rem; }
+    main > section[class~="py-24"] { padding-block: 4.5rem; }
+    #services, #faq { padding-block: 4.5rem !important; }
+    .card { border-radius: 16px; }
+
+    /* Do not leave content hidden while mobile browsers delay an observer. */
+    .reveal, .reveal-stagger > *, .mask-line span { opacity: 1; transform: none; }
+
+    .sticky-cta { right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); padding: .75rem 1rem; }
+
+    /* Replace the desktop scroll-driven stack with an accessible mobile card list. */
+    #work { height: auto !important; padding: 4.5rem 0; }
+    #work > .max-w-\[1320px\] { padding: 0 1rem 2rem; margin: 0; }
+    #work .stack-sticky { position: relative; display: grid; height: auto; gap: 1rem; padding: 0 1rem; overflow: visible; }
+    #work .stack-card { position: relative; inset: auto; width: 100%; height: auto; min-height: 0; margin: 0; opacity: 1 !important; filter: none !important; transform: none !important; }
+    #work .stack-card .h-full { min-height: 0; }
+    #work .stack-card .h-\[240px\] { height: 11.5rem; }
+    #work .stack-card .p-8 { padding: 1.5rem; }
+    .cmp-table th, .cmp-table td { padding: .75rem .9rem; }
+    .marquee-track { animation-duration: 42s; }
+    .glow-border-wrap { border-radius: 16px; }
+    #book-call .rounded-\[28px\] { border-radius: 20px; padding: 2.25rem 1.25rem; }
+    #book-call h2 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    footer { padding-block: 3.5rem; }
+    footer .max-w-\[1320px\] { padding-inline: 1rem; }
+  }
+
+  @media (max-width: 479px) {
+    .max-w-\[1320px\], .max-w-\[760px\] { padding-inline: 1rem !important; }
+    .relative.pt-36 { padding-top: 7rem; padding-bottom: 4.5rem; }
+    h1 { font-size: clamp(2.35rem, 11vw, 3.2rem) !important; }
+    h2.font-display { font-size: clamp(1.85rem, 8.5vw, 2.35rem) !important; }
+    #hero-dash { padding: 1rem; }
+    #hero-dash .grid-cols-3 { gap: .4rem; }
+    #hero-dash .grid-cols-3 > div { padding: .65rem .45rem; }
+    #hero-dash .grid-cols-3 p:first-child { font-size: 8px; line-height: 1.25; }
+    #hero-dash .grid-cols-3 p:last-child { font-size: 1.15rem; }
+    #hero-dash .text-\[12px\] { font-size: 10px; }
+    #hero-dash .avatar { width: 1.5rem; height: 1.5rem; }
+    .btn-primary, .btn-ghost { justify-content: center; }
+    #top .mt-9 > .btn-primary, #top .mt-9 > .btn-ghost, #book-call .mt-9 > a { width: 100%; }
+    .badge-pill { justify-content: center; width: 100%; }
+    .acc-item { padding-inline: 1rem; }
+    .acc-item button { gap: 1rem; }
+  }
+
+  @media (hover: none), (prefers-reduced-motion: reduce) {
+    .tilt-card, .btn-magnetic { transform: none !important; }
+    .marquee-track { animation-play-state: paused; }
+  }
 </style>
 </head>
 <body class="antialiased overflow-x-hidden">
