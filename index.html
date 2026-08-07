@@ -860,10 +860,12 @@
 
       const stackTl = gsap.timeline({
         scrollTrigger: {
-          trigger: '#work',
+          // Start only when the sticky card area reaches the viewport.
+          trigger: '#work .stack-sticky',
           start: 'top top',
-          end: 'bottom bottom',
+          end: () => '+=' + ((stackCards.length - 1) * window.innerHeight),
           scrub: 1,
+          invalidateOnRefresh: true,
         }
       });
 
