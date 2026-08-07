@@ -858,25 +858,28 @@
       gsap.set(stackCards, { yPercent: 100, opacity: 1, scale: 1, filter: 'blur(0px)' });
       gsap.set(stackCards[0], { yPercent: 0 });
 
-      const stackTl = gsap.timeline({
-        scrollTrigger: {
-          // Start only when the sticky card area reaches the viewport.
-          trigger: '#work .stack-sticky',
-          start: 'top top',
-          end: () => '+=' + ((stackCards.length - 1) * window.innerHeight),
-          scrub: 1,
-          invalidateOnRefresh: true,
+      ScrollTrigger.create({
+        trigger: '#work .stack-sticky',
+        start: 'top top',
+        end: () => '+=' + ((stackCards.length - 1) * window.innerHeight),
+        invalidateOnRefresh: true,
+        onUpdate(self) {
+          const progress = self.progress * (stackCards.length - 1);
+
+          stackCards.forEach((card, index) => {
+            const entered = index === 0
+              ? 1
+              : Math.min(Math.max(progress - (index - 1), 0), 1);
+
+            gsap.set(card, {
+              yPercent: (1 - entered) * 100,
+              opacity: index < Math.floor(progress) ? 0.35 : 1,
+              scale: 1,
+              filter: 'none'
+            });
+          });
         }
       });
-
-      stackCards.forEach((card, i) => {
-        if (i === 0) return;
-        const prevCard = stackCards[i - 1];
-        stackTl
-          .to(prevCard, { opacity: 0.35, ease: 'none', duration: 1 }, i - 1)
-          .to(card, { yPercent: 0, ease: 'none', duration: 1 }, i - 1);
-      });
-    }
   }
 </script>
 
