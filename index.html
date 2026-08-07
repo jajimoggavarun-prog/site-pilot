@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SitePilot AI — Your On-Demand Website Team</title>
+<meta name="description" content="Unlimited website design, development, and maintenance on a monthly subscription. Request work, watch it fly through the pipeline, ship faster." />
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['Inter', 'sans-serif'],
+          mono: ['"JetBrains Mono"', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  :root{
+    --bg:#0B0E14;
+    --bg-elev:#10141C;
+    --bg-card:#141924;
+    --bg-card-2:#171D2A;
+    --border:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.16);
+    --text:#F3F5F7;
+    --text-muted:#8A93A6;
+    --text-dim:#5A6274;
+    --teal:#5EEAD4;
+    --sky:#38BDF8;
+    --amber:#FBBF24;
+    --rose:#FB7185;
+  }
+  *{box-sizing:border-box;}
+  html,body{background:var(--bg); color:var(--text);}
+  body{font-family:'Inter',sans-serif; cursor:auto;}
+  ::selection{background:var(--teal); color:#0B0E14;}
+
+  .font-display{font-family:'Space Grotesk',sans-serif;}
+  .font-mono{font-family:'JetBrains Mono',monospace;}
+
+  .grad-text{ background:linear-gradient(135deg,#5EEAD4 0%, #38BDF8 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .grad-bg{background:linear-gradient(135deg,#5EEAD4 0%, #38BDF8 100%);}
+
+  .bg-grid{
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 100%);
+  }
+
+  .card{ background:var(--bg-card); border:1px solid var(--border); border-radius:20px; transition:border-color 300ms ease, transform 300ms ease, box-shadow 300ms ease; }
+  .card:hover{ border-color:var(--border-strong); }
+
+  .glass{
+    background:rgba(20,25,36,0.55);
+    border:1px solid rgba(255,255,255,0.10);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+  }
+
+  .pulse-dot{ width:7px;height:7px;border-radius:50%;background:var(--teal); box-shadow:0 0 0 0 rgba(94,234,212,0.6); animation:pulse 2s infinite; }
+  @keyframes pulse{ 0%{box-shadow:0 0 0 0 rgba(94,234,212,0.45);} 70%{box-shadow:0 0 0 8px rgba(94,234,212,0);} 100%{box-shadow:0 0 0 0 rgba(94,234,212,0);} }
+
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity 700ms cubic-bezier(.22,1,.36,1), transform 700ms cubic-bezier(.22,1,.36,1);}
+  .reveal.in{opacity:1; transform:translateY(0);}
+  .reveal-stagger > * {opacity:0; transform:translateY(20px); transition:opacity 600ms cubic-bezier(.22,1,.36,1), transform 600ms cubic-bezier(.22,1,.36,1);}
+  .reveal-stagger.in > *{opacity:1; transform:translateY(0);}
+  .reveal-stagger.in > *:nth-child(1){transition-delay:0ms;} .reveal-stagger.in > *:nth-child(2){transition-delay:80ms;}
+  .reveal-stagger.in > *:nth-child(3){transition-delay:160ms;} .reveal-stagger.in > *:nth-child(4){transition-delay:240ms;}
+  .reveal-stagger.in > *:nth-child(5){transition-delay:320ms;} .reveal-stagger.in > *:nth-child(6){transition-delay:400ms;}
+  .reveal-stagger.in > *:nth-child(7){transition-delay:480ms;} .reveal-stagger.in > *:nth-child(8){transition-delay:560ms;}
+
+  /* text mask reveal */
+  .mask-line{ overflow:hidden; display:block; }
+  .mask-line span{ display:inline-block; transform:translateY(115%); transition:transform 800ms cubic-bezier(.22,1,.36,1); }
+  .mask-line.in span{ transform:translateY(0); }
+
+  .marquee-track{display:flex; width:max-content; animation:marquee 32s linear infinite;}
+  .marquee-track.slow{animation-duration:52s;}
+  @keyframes marquee{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  .marquee-mask{ -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent); }
+  .marquee-track:hover{ animation-play-state:paused; }
+
+  .btn-primary{ background:linear-gradient(135deg,#5EEAD4,#38BDF8); color:#061014; font-weight:600; transition:transform 220ms cubic-bezier(.22,1,.36,1), box-shadow 220ms ease; }
+  .btn-primary:hover{ box-shadow:0 10px 34px -8px rgba(56,189,248,0.5); }
+  .btn-primary:active{ transform:scale(0.96); }
+  .btn-ghost{ border:1px solid var(--border-strong); color:var(--text); transition:background 220ms ease, border-color 220ms ease, transform 220ms ease; }
+  .btn-ghost:hover{ background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.3); }
+  .btn-ghost:active{ transform:scale(0.96); }
+  .btn-magnetic{ will-change:transform; }
+
+  #nav{ transition: background 300ms ease, border-color 300ms ease, padding 300ms ease; }
+  #nav.scrolled{ background:rgba(11,14,20,0.75); backdrop-filter:blur(14px); border-color:var(--border); }
+
+  .acc-panel{ max-height:0; overflow:hidden; transition:max-height 400ms cubic-bezier(.22,1,.36,1); }
+  .acc-item.open .acc-panel{ max-height:260px; }
+  .acc-chevron{ transition:transform 300ms ease; }
+  .acc-item.open .acc-chevron{ transform:rotate(45deg); }
+
+  .tag{ font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.02em; padding:3px 9px; border-radius:999px; }
+  .tag-progress{ background:rgba(251,191,36,0.12); color:var(--amber); border:1px solid rgba(251,191,36,0.25); }
+  .tag-review{ background:rgba(56,189,248,0.12); color:var(--sky); border:1px solid rgba(56,189,248,0.25); }
+  .tag-shipped{ background:rgba(94,234,212,0.12); color:var(--teal); border:1px solid rgba(94,234,212,0.25); }
+
+  .glow-follow{ position:absolute; inset:0; pointer-events:none; background: radial-gradient(560px circle at var(--x,50%) var(--y,50%), rgba(94,234,212,0.10), transparent 60%); }
+
+  .tilt-card{ transform-style:preserve-3d; transition:transform 120ms ease-out, box-shadow 300ms ease; will-change:transform; }
+
+  /* stacked card scroll */
+  .stack-section{ position:relative; }
+  .stack-sticky{ position:sticky; top:0; height:100vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .stack-card{
+    position:absolute;
+    inset:0;
+    margin:auto;
+    width:min(920px, 88vw);
+    height:85vh;
+    max-height:780px;
+    border-radius:24px;
+    will-change:transform, opacity, filter;
+    transform:translateY(100%);
+  }
+  .stack-card:first-child{ transform:translateY(0); }
+
+  /* comparison table */
+  .cmp-table th, .cmp-table td{ padding:14px 18px; border-bottom:1px solid var(--border); font-size:13.5px; }
+  .cmp-table th{ font-family:'JetBrains Mono',monospace; text-transform:uppercase; font-size:11px; letter-spacing:.04em; color:var(--text-dim); text-align:left; font-weight:500; }
+  .cmp-highlight{ background:rgba(94,234,212,0.045); }
+
+  .avatar{ width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-size:13px; font-weight:600; color:#061014; }
+
+  .badge-pill{ display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-muted); border:1px solid var(--border); padding:6px 12px; border-radius:999px; background:var(--bg-elev); }
+
+  .glow-border-wrap{ border-radius:20px; padding:2px; background:linear-gradient(135deg,#FBBF24,#38BDF8,#5EEAD4,#FBBF24); background-size:300% 300%; animation:borderFlow 6s ease infinite; box-shadow:0 25px 70px -25px rgba(251,191,36,0.25); }
+  @keyframes borderFlow{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+
+  .sticky-cta{ position:fixed; right:20px; bottom:20px; z-index:55; transition:transform 300ms cubic-bezier(.22,1,.36,1), opacity 300ms ease; }
+  .sticky-cta.hidden-cta{ transform:translateY(140%); opacity:0; }
+
+  ::-webkit-scrollbar{ width:10px; } ::-webkit-scrollbar-track{ background:var(--bg); } ::-webkit-scrollbar-thumb{ background:#232838; border-radius:8px; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; } }
+</style>
+</head>
+<body class="antialiased overflow-x-hidden">
+
+<div id="cursor-glow" class="fixed top-0 left-0 w-[420px] h-[420px] rounded-full pointer-events-none z-[1] hidden lg:block" style="background:radial-gradient(circle, rgba(94,234,212,0.06), transparent 70%); transform:translate(-50%,-50%);"></div>
+
+<div id="scroll-progress" class="fixed top-0 left-0 h-[2px] z-[60]" style="width:0%; background:linear-gradient(90deg,#5EEAD4,#38BDF8);"></div>
+
+<header id="nav" class="fixed top-0 inset-x-0 z-50 border-b border-transparent">
+  <div class="max-w-[1320px] mx-auto px-6 lg:px-8 flex items-center justify-between h-16">
+    <a href="#top" class="flex items-center gap-2.5">
+      <span class="w-7 h-7 rounded-lg grad-bg flex items-center justify-center"><i data-lucide="navigation" class="w-4 h-4" style="color:#061014"></i></span>
+      <span class="font-display font-semibold text-[15px] tracking-tight">SitePilot <span style="color:var(--text-dim)">AI</span></span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 font-mono text-[12.5px] uppercase tracking-wide" style="color:var(--text-muted)">
+      <a href="#services" class="hover:text-white transition-colors">Services</a>
+      <a href="#work" class="hover:text-white transition-colors">Work</a>
+      <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
+      <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+    </nav>
+    <div class="hidden md:flex items-center gap-3">
+      <a href="#" class="text-[13px] font-medium px-3 py-2" style="color:var(--text-muted)">Sign in</a>
+      <a href="#book-call" class="btn-primary btn-magnetic text-[13px] px-4 py-2 rounded-full">Book a call</a>
+    </div>
+    <button id="menu-btn" class="md:hidden w-9 h-9 flex items-center justify-center rounded-lg border" style="border-color:var(--border)"><i data-lucide="menu" class="w-4 h-4"></i></button>
+  </div>
+  <div id="mobile-menu" class="hidden md:hidden border-t px-6 py-4 flex flex-col gap-4 font-mono text-[13px] uppercase" style="border-color:var(--border); background:rgba(11,14,20,0.98);">
+    <a href="#services">Services</a><a href="#work">Work</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a>
+    <a href="#book-call" class="btn-primary text-center rounded-full py-2.5 mt-1 normal-case font-body">Book a call</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="relative pt-36 pb-20 lg:pt-44 lg:pb-28 overflow-hidden">
+    <div class="absolute inset-0 bg-grid" style="height:120%;"></div>
+    <div class="glow-follow" id="hero-glow"></div>
+
+    <div class="relative max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-16 items-center">
+        <div>
+          <div class="reveal inline-flex items-center gap-2 font-mono text-[11.5px] uppercase tracking-wider px-3 py-1.5 rounded-full border" style="border-color:var(--border-strong); color:var(--text-muted)">
+            <span class="pulse-dot"></span> 37 builds in flight right now
+          </div>
+
+          <h1 class="font-display font-medium text-[42px] leading-[1.08] sm:text-[54px] lg:text-[66px] mt-6 tracking-tight">
+            <span class="mask-line"><span>Your website team,</span></span>
+            <span class="mask-line"><span class="grad-text">on standby.</span></span>
+          </h1>
+
+          <p class="reveal text-[17px] lg:text-[18px] leading-relaxed mt-6 max-w-[480px]" style="color:var(--text-muted)">
+            One subscription. Unlimited design, development, and maintenance requests. Submit a task, watch it move through the pipeline, get a shipped page — no proposals, no scoping calls, no waiting on an agency's calendar.
+          </p>
+
+          <div class="reveal flex flex-wrap items-center gap-4 mt-9">
+            <a href="#pricing" class="btn-primary btn-magnetic rounded-full px-6 py-3.5 text-[14.5px] inline-flex items-center gap-2">Start your subscription <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            <a href="#book-call" class="btn-ghost btn-magnetic rounded-full px-6 py-3.5 text-[14.5px] inline-flex items-center gap-2"><i data-lucide="calendar" class="w-3.5 h-3.5"></i> Book a call</a>
+          </div>
+
+          <div class="reveal flex items-center gap-5 mt-10">
+            <div class="flex -space-x-3">
+              <span class="avatar" style="background:#5EEAD4;">RK</span>
+              <span class="avatar" style="background:#38BDF8;">AM</span>
+              <span class="avatar" style="background:#FBBF24;">SN</span>
+              <span class="avatar" style="background:#FB7185;">+</span>
+            </div>
+            <div>
+              <div class="flex items-center gap-0.5" style="color:var(--amber)">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i>
+              </div>
+              <p class="text-[12.5px] font-mono mt-1" style="color:var(--text-dim)">120+ teams · 4.9 average rating</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- interactive pipeline dashboard -->
+        <div class="reveal relative" id="hero-dash-wrap">
+          <div class="absolute -inset-6 rounded-[28px] blur-2xl opacity-30 grad-bg"></div>
+          <div class="glass tilt-card relative rounded-[24px] p-5 lg:p-6" id="hero-dash" style="box-shadow:0 30px 80px -30px rgba(0,0,0,0.6);">
+            <div class="flex items-center justify-between mb-5">
+              <span class="font-mono text-[11px] uppercase tracking-wider" style="color:var(--text-muted)">Live pipeline</span>
+              <span class="tag tag-shipped flex items-center gap-1.5"><span class="pulse-dot"></span>Live</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5 mb-4">
+              <div class="rounded-xl p-3" style="background:var(--bg-elev); border:1px solid var(--border)">
+                <p class="font-mono text-[10.5px]" style="color:var(--text-dim)">IN PROGRESS</p>
+                <p class="font-display text-[22px] mt-1">6</p>
+              </div>
+              <div class="rounded-xl p-3" style="background:var(--bg-elev); border:1px solid var(--border)">
+                <p class="font-mono text-[10.5px]" style="color:var(--text-dim)">IN REVIEW</p>
+                <p class="font-display text-[22px] mt-1">3</p>
+              </div>
+              <div class="rounded-xl p-3" style="background:var(--bg-elev); border:1px solid var(--border)">
+                <p class="font-mono text-[10.5px]" style="color:var(--text-dim)">SHIPPED TODAY</p>
+                <p class="font-display text-[22px] mt-1" style="color:var(--teal)">4</p>
+              </div>
+            </div>
+
+            <div class="space-y-2.5 mb-4">
+              <div class="p-3.5 rounded-xl" style="background:var(--bg-elev); border:1px solid var(--border)">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-[13px] font-medium">Pricing page redesign</p>
+                  <span class="tag tag-progress">72%</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)"><div class="h-1.5 rounded-full" style="width:72%; background:linear-gradient(90deg,#FBBF24,#5EEAD4)"></div></div>
+              </div>
+              <div class="p-3.5 rounded-xl" style="background:var(--bg-elev); border:1px solid var(--border)">
+                <div class="flex items-center justify-between mb-2">
+                  <p class="text-[13px] font-medium">Booking flow — clinic site</p>
+                  <span class="tag tag-review">Review</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full" style="background:rgba(255,255,255,0.06)"><div class="h-1.5 rounded-full" style="width:90%; background:linear-gradient(90deg,#38BDF8,#5EEAD4)"></div></div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-4" style="border-top:1px solid var(--border)">
+              <div class="flex items-center gap-2">
+                <div class="flex -space-x-2">
+                  <span class="avatar w-7 h-7 text-[10.5px]" style="background:#5EEAD4;">DS</span>
+                  <span class="avatar w-7 h-7 text-[10.5px]" style="background:#38BDF8;">PK</span>
+                </div>
+                <span class="text-[12px]" style="color:var(--text-muted)">2 people active now</span>
+              </div>
+              <span class="text-[12px] font-mono text-white">Next slot 4:00 PM</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUSTED MARQUEE -->
+  <section class="py-10 border-y" style="border-color:var(--border)">
+    <p class="text-center font-mono text-[11px] uppercase tracking-widest mb-6" style="color:var(--text-dim)">Built for teams who ship often</p>
+    <div class="marquee-mask">
+      <div class="marquee-track slow">
+        <div class="flex items-center gap-16 pr-16">
+          <span class="font-display text-lg" style="color:var(--text-dim)">Startups</span><span class="font-display text-lg" style="color:var(--text-dim)">SaaS Companies</span><span class="font-display text-lg" style="color:var(--text-dim)">Restaurants</span><span class="font-display text-lg" style="color:var(--text-dim)">Real Estate</span><span class="font-display text-lg" style="color:var(--text-dim)">Healthcare</span><span class="font-display text-lg" style="color:var(--text-dim)">Agencies</span><span class="font-display text-lg" style="color:var(--text-dim)">Enterprises</span>
+        </div>
+        <div class="flex items-center gap-16 pr-16" aria-hidden="true">
+          <span class="font-display text-lg" style="color:var(--text-dim)">Startups</span><span class="font-display text-lg" style="color:var(--text-dim)">SaaS Companies</span><span class="font-display text-lg" style="color:var(--text-dim)">Restaurants</span><span class="font-display text-lg" style="color:var(--text-dim)">Real Estate</span><span class="font-display text-lg" style="color:var(--text-dim)">Healthcare</span><span class="font-display text-lg" style="color:var(--text-dim)">Agencies</span><span class="font-display text-lg" style="color:var(--text-dim)">Enterprises</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-24 lg:py-32">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-[560px] mb-16">
+        <span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--teal)">Services</span>
+        <h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">Everything a website needs, under one request queue.</h2>
+      </div>
+      <div class="reveal-stagger grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="card tilt-card p-7"><i data-lucide="layout-template" class="w-5 h-5 mb-5" style="color:var(--teal)"></i><h3 class="font-display text-[17px] mb-2">Website design</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Full visual identity and page design, tailored to how your customers actually decide.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="code-2" class="w-5 h-5 mb-5" style="color:var(--sky)"></i><h3 class="font-display text-[17px] mb-2">Development</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Production-grade builds — fast, accessible, and easy to hand off to your own team later.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="zap" class="w-5 h-5 mb-5" style="color:var(--amber)"></i><h3 class="font-display text-[17px] mb-2">Landing pages</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">New campaign or launch page, turned around in days — not sprint cycles.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="search" class="w-5 h-5 mb-5" style="color:var(--teal)"></i><h3 class="font-display text-[17px] mb-2">SEO &amp; AEO</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Technical SEO, Core Web Vitals fixes, and structured, well-cited content optimized to be surfaced by ChatGPT, Perplexity, and AI Overviews — not just ranked on Google.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="gauge" class="w-5 h-5 mb-5" style="color:var(--rose)"></i><h3 class="font-display text-[17px] mb-2">Performance optimization</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Faster load times, cleaner Lighthouse scores, and pages built to hold up under real traffic.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="bot" class="w-5 h-5 mb-5" style="color:var(--sky)"></i><h3 class="font-display text-[17px] mb-2">AI integrations</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Chat assistants, on-site search, and automations wired into your existing stack.</p></div>
+        <div class="card tilt-card p-7"><i data-lucide="wrench" class="w-5 h-5 mb-5" style="color:var(--amber)"></i><h3 class="font-display text-[17px] mb-2">Ongoing maintenance</h3><p class="text-[14px] leading-relaxed" style="color:var(--text-muted)">Monitoring, fixes, and small updates handled before you notice something's off.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="py-20 border-y" style="border-color:var(--border); background:var(--bg-elev)">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8 grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div class="reveal text-center lg:text-left"><p class="font-display text-[38px] tracking-tight"><span class="counter" data-target="480">0</span>+</p><p class="font-mono text-[11.5px] uppercase mt-1" style="color:var(--text-dim)">Sites shipped</p></div>
+      <div class="reveal text-center lg:text-left"><p class="font-display text-[38px] tracking-tight"><span class="counter" data-target="27">0</span>H</p><p class="font-mono text-[11.5px] uppercase mt-1" style="color:var(--text-dim)">Avg. first draft</p></div>
+      <div class="reveal text-center lg:text-left"><p class="font-display text-[38px] tracking-tight"><span class="counter" data-target="99">0</span>.98%</p><p class="font-mono text-[11.5px] uppercase mt-1" style="color:var(--text-dim)">Uptime</p></div>
+      <div class="reveal text-center lg:text-left"><p class="font-display text-[38px] tracking-tight"><span class="counter" data-target="120">0</span>+</p><p class="font-mono text-[11.5px] uppercase mt-1" style="color:var(--text-dim)">Teams on subscription</p></div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section id="process" class="py-24 lg:py-32">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-[560px] mb-16"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--sky)">Flight plan</span><h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">From request to shipped, in four steps.</h2></div>
+      <div class="reveal-stagger grid md:grid-cols-4 gap-6 relative">
+        <div class="hidden md:block absolute top-6 left-0 right-0 h-px" style="background:var(--border)"></div>
+        <div><div class="w-12 h-12 rounded-full flex items-center justify-center font-mono text-[13px] mb-6 relative z-10" style="background:var(--bg); border:1px solid var(--border-strong)">01</div><h3 class="font-display text-[16.5px] mb-2">Submit a request</h3><p class="text-[13.5px] leading-relaxed" style="color:var(--text-muted)">Describe the page or fix you need. No brief templates, no scoping calls.</p></div>
+        <div><div class="w-12 h-12 rounded-full flex items-center justify-center font-mono text-[13px] mb-6 relative z-10" style="background:var(--bg); border:1px solid var(--border-strong)">02</div><h3 class="font-display text-[16.5px] mb-2">We design &amp; build</h3><p class="text-[13.5px] leading-relaxed" style="color:var(--text-muted)">A dedicated designer and engineer pick it up — usually within a day.</p></div>
+        <div><div class="w-12 h-12 rounded-full flex items-center justify-center font-mono text-[13px] mb-6 relative z-10" style="background:var(--bg); border:1px solid var(--border-strong)">03</div><h3 class="font-display text-[16.5px] mb-2">You review</h3><p class="text-[13.5px] leading-relaxed" style="color:var(--text-muted)">Comment directly on the draft. Revisions come back same-day.</p></div>
+        <div><div class="w-12 h-12 rounded-full flex items-center justify-center font-mono text-[13px] mb-6 relative z-10" style="background:var(--bg); border:1px solid var(--border-strong)">04</div><h3 class="font-display text-[16.5px] mb-2">We ship &amp; monitor</h3><p class="text-[13.5px] leading-relaxed" style="color:var(--text-muted)">Live to production, then watched for performance and uptime after launch.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO — stacked card scroll -->
+  <section id="work" class="stack-section" style="height:600vh;">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8 pt-24 mb-4 relative z-20">
+      <span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--amber)">Selected work</span>
+      <h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">Recent flights.</h2>
+    </div>
+    <div class="stack-sticky">
+
+      <div class="stack-card glass p-0 overflow-hidden" style="box-shadow:0 40px 100px -30px rgba(0,0,0,0.65);">
+        <div class="h-full grid lg:grid-cols-2">
+          <div class="h-[240px] lg:h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1b2a2a,#0f1b22)">
+            <div class="absolute top-4 left-4 flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:#FB7185"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#FBBF24"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#5EEAD4"></span></div>
+            <i data-lucide="home" class="w-16 h-16" style="color:var(--teal); opacity:.6"></i>
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <span class="tag tag-shipped w-fit mb-4">Real Estate</span>
+            <h3 class="font-display text-[26px] lg:text-[32px] mb-3">Vanik Homes</h3>
+            <p class="text-[14.5px] leading-relaxed mb-6" style="color:var(--text-muted)">Listing pages rebuilt around how buyers actually filter and compare — cutting time-to-inquiry significantly.</p>
+            <a href="#" class="text-[13.5px] font-medium inline-flex items-center gap-1.5 w-fit" style="color:var(--teal)">View case study <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card glass p-0 overflow-hidden" style="box-shadow:0 40px 100px -30px rgba(0,0,0,0.65);">
+        <div class="h-full grid lg:grid-cols-2">
+          <div class="h-[240px] lg:h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#2a1b28,#1b0f1a)">
+            <div class="absolute top-4 left-4 flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:#FB7185"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#FBBF24"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#5EEAD4"></span></div>
+            <i data-lucide="scissors" class="w-16 h-16" style="color:var(--rose); opacity:.6"></i>
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <span class="tag tag-review w-fit mb-4">Beauty</span>
+            <h3 class="font-display text-[26px] lg:text-[32px] mb-3">Luxe Salon</h3>
+            <p class="text-[14.5px] leading-relaxed mb-6" style="color:var(--text-muted)">A booking flow built for same-day, impulse appointments — designed to convert on mobile first.</p>
+            <a href="#" class="text-[13.5px] font-medium inline-flex items-center gap-1.5 w-fit" style="color:var(--teal)">View case study <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card glass p-0 overflow-hidden" style="box-shadow:0 40px 100px -30px rgba(0,0,0,0.65);">
+        <div class="h-full grid lg:grid-cols-2">
+          <div class="h-[240px] lg:h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1b2436,#0f1420)">
+            <div class="absolute top-4 left-4 flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:#FB7185"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#FBBF24"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#5EEAD4"></span></div>
+            <i data-lucide="layout-dashboard" class="w-16 h-16" style="color:var(--sky); opacity:.6"></i>
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <span class="tag tag-progress w-fit mb-4">SaaS</span>
+            <h3 class="font-display text-[26px] lg:text-[32px] mb-3">SaaS Dashboard</h3>
+            <p class="text-[14.5px] leading-relaxed mb-6" style="color:var(--text-muted)">Onboarding redesign that cut time-to-first-value in half and reduced support tickets.</p>
+            <a href="#" class="text-[13.5px] font-medium inline-flex items-center gap-1.5 w-fit" style="color:var(--teal)">View case study <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card glass p-0 overflow-hidden" style="box-shadow:0 40px 100px -30px rgba(0,0,0,0.65);">
+        <div class="h-full grid lg:grid-cols-2">
+          <div class="h-[240px] lg:h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#2a231b,#1a140f)">
+            <div class="absolute top-4 left-4 flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:#FB7185"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#FBBF24"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#5EEAD4"></span></div>
+            <i data-lucide="utensils" class="w-16 h-16" style="color:var(--amber); opacity:.6"></i>
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <span class="tag tag-shipped w-fit mb-4">Hospitality</span>
+            <h3 class="font-display text-[26px] lg:text-[32px] mb-3">Restaurant Website</h3>
+            <p class="text-[14.5px] leading-relaxed mb-6" style="color:var(--text-muted)">Menu and reservations combined into a single fast flow, built to load instantly on mobile data.</p>
+            <a href="#" class="text-[13.5px] font-medium inline-flex items-center gap-1.5 w-fit" style="color:var(--teal)">View case study <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-card glass p-0 overflow-hidden" style="box-shadow:0 40px 100px -30px rgba(0,0,0,0.65);">
+        <div class="h-full grid lg:grid-cols-2">
+          <div class="h-[240px] lg:h-full flex items-center justify-center relative" style="background:linear-gradient(135deg,#1b2a24,#0f1a16)">
+            <div class="absolute top-4 left-4 flex gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background:#FB7185"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#FBBF24"></span><span class="w-2.5 h-2.5 rounded-full" style="background:#5EEAD4"></span></div>
+            <i data-lucide="heart-pulse" class="w-16 h-16" style="color:var(--teal); opacity:.6"></i>
+          </div>
+          <div class="p-8 lg:p-12 flex flex-col justify-center">
+            <span class="tag tag-review w-fit mb-4">Healthcare</span>
+            <h3 class="font-display text-[26px] lg:text-[32px] mb-3">Healthcare Website</h3>
+            <p class="text-[14.5px] leading-relaxed mb-6" style="color:var(--text-muted)">Patient booking rebuilt for speed and accessibility compliance across every device.</p>
+            <a href="#" class="text-[13.5px] font-medium inline-flex items-center gap-1.5 w-fit" style="color:var(--teal)">View case study <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i></a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US / COMPARISON -->
+  <section class="py-24 lg:py-32 border-t" style="border-color:var(--border)">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-[560px] mb-14"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--teal)">Why SitePilot</span><h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">Agency quality, freelancer speed, subscription price.</h2></div>
+      <div class="reveal card overflow-x-auto">
+        <table class="w-full cmp-table min-w-[560px]">
+          <thead><tr><th>Compare</th><th>SitePilot AI</th><th>Traditional agency</th><th>Freelancer</th></tr></thead>
+          <tbody>
+            <tr class="cmp-highlight"><td class="font-medium">Turnaround time</td><td style="color:var(--teal)">1–3 days</td><td style="color:var(--text-muted)">2–4 weeks</td><td style="color:var(--text-muted)">Varies widely</td></tr>
+            <tr><td class="font-medium">Pricing model</td><td style="color:var(--teal)">Flat monthly</td><td style="color:var(--text-muted)">Per-project quote</td><td style="color:var(--text-muted)">Hourly / per-project</td></tr>
+            <tr class="cmp-highlight"><td class="font-medium">Revisions</td><td style="color:var(--teal)">Unlimited</td><td style="color:var(--text-muted)">Capped rounds</td><td style="color:var(--text-muted)">Billed separately</td></tr>
+            <tr><td class="font-medium">Team consistency</td><td style="color:var(--teal)">Same dedicated pod</td><td style="color:var(--text-muted)">Rotates by project</td><td style="color:var(--text-muted)">Single point of failure</td></tr>
+            <tr class="cmp-highlight"><td class="font-medium">Scalability</td><td style="color:var(--teal)">Upgrade anytime</td><td style="color:var(--text-muted)">Re-negotiate scope</td><td style="color:var(--text-muted)">Limited by availability</td></tr>
+            <tr><td class="font-medium">Contract length</td><td style="color:var(--teal)">Month-to-month</td><td style="color:var(--text-muted)">3–12 month lock-in</td><td style="color:var(--text-muted)">Per-project</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="reveal-stagger flex flex-wrap gap-3 mt-8">
+        <span class="badge-pill"><i data-lucide="shield-check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>SSL secured</span>
+        <span class="badge-pill"><i data-lucide="lock" class="w-3.5 h-3.5" style="color:var(--teal)"></i>GDPR ready</span>
+        <span class="badge-pill"><i data-lucide="activity" class="w-3.5 h-3.5" style="color:var(--teal)"></i>24/7 monitoring</span>
+        <span class="badge-pill"><i data-lucide="gauge" class="w-3.5 h-3.5" style="color:var(--teal)"></i>99.98% uptime</span>
+        <span class="badge-pill"><i data-lucide="ban" class="w-3.5 h-3.5" style="color:var(--teal)"></i>Cancel anytime</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="py-24 lg:py-32 border-t" style="border-color:var(--border); background:var(--bg-elev)">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-[560px] mb-14"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--sky)">Before / After</span><h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">Same brand. Redesigned to convert.</h2></div>
+      <div class="reveal grid md:grid-cols-2 gap-5">
+        <div class="card p-0 overflow-hidden">
+          <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border)"><span class="tag" style="background:rgba(138,147,166,0.12); color:var(--text-muted); border:1px solid var(--border)">Before</span><span class="font-mono text-[11.5px]" style="color:var(--text-dim)">1.8s LCP · 1.2% conversion</span></div>
+          <div class="h-[260px] p-6 grayscale opacity-70" style="background:var(--bg)">
+            <div class="h-4 w-2/3 rounded mb-4" style="background:#2a2f3a"></div>
+            <div class="h-3 w-full rounded mb-2" style="background:#20242e"></div>
+            <div class="h-3 w-5/6 rounded mb-6" style="background:#20242e"></div>
+            <div class="h-9 w-32 rounded" style="background:#2a2f3a"></div>
+          </div>
+        </div>
+        <div class="card p-0 overflow-hidden" style="border-color:rgba(94,234,212,0.35)">
+          <div class="px-6 py-4 flex items-center justify-between" style="border-bottom:1px solid var(--border)"><span class="tag tag-shipped">After</span><span class="font-mono text-[11.5px]" style="color:var(--teal)">0.6s LCP · 4.1% conversion</span></div>
+          <div class="h-[260px] p-6" style="background:linear-gradient(160deg, rgba(94,234,212,0.06), rgba(56,189,248,0.03))">
+            <div class="h-5 w-3/4 rounded mb-4 grad-bg"></div>
+            <div class="h-3 w-full rounded mb-2" style="background:rgba(255,255,255,0.14)"></div>
+            <div class="h-3 w-4/6 rounded mb-6" style="background:rgba(255,255,255,0.14)"></div>
+            <div class="h-9 w-36 rounded-full btn-primary flex items-center justify-center text-[12.5px]">Get started</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS MARQUEE -->
+  <section class="py-24 border-t" style="border-color:var(--border)">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8 mb-12">
+      <span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--amber)">Word from the flight deck</span>
+      <h2 class="font-display font-medium text-[28px] lg:text-[36px] tracking-tight mt-3">Teams stop thinking about their website.</h2>
+    </div>
+    <div class="marquee-mask">
+      <div class="marquee-track">
+        <div class="flex gap-5 pr-5">
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"We stopped keeping a backlog for the website — we just submit and it's handled."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#5EEAD4">RM</span><div><p class="text-[12.5px] font-medium">Head of Growth</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Northloop · SaaS</p></div></div><span class="tag tag-shipped">+38%</span></div>
+          </div>
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"Turnaround is the whole pitch. A landing page in two days used to take three weeks."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#38BDF8">PV</span><div><p class="text-[12.5px] font-medium">Marketing Lead</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Vanik Homes · Real Estate</p></div></div><span class="tag tag-shipped">+2.1x</span></div>
+          </div>
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"Our booking page finally loads fast. Patients notice, and so does our ranking."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#FBBF24">AS</span><div><p class="text-[12.5px] font-medium">Operations Manager</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Clearview Clinics</p></div></div><span class="tag tag-shipped">-64% LCP</span></div>
+          </div>
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"One flat rate replaced three freelancers and a part-time contractor."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#FB7185">KJ</span><div><p class="text-[12.5px] font-medium">Founder</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Luxe Salon</p></div></div><span class="tag tag-shipped">-70% cost</span></div>
+          </div>
+        </div>
+        <div class="flex gap-5 pr-5" aria-hidden="true">
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"We stopped keeping a backlog for the website — we just submit and it's handled."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#5EEAD4">RM</span><div><p class="text-[12.5px] font-medium">Head of Growth</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Northloop · SaaS</p></div></div><span class="tag tag-shipped">+38%</span></div>
+          </div>
+          <div class="card p-6 w-[340px] shrink-0">
+            <div class="flex items-center gap-1 mb-3" style="color:var(--amber)"><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i><i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i></div>
+            <p class="text-[14px] leading-relaxed mb-4">"Turnaround is the whole pitch. A landing page in two days used to take three weeks."</p>
+            <div class="flex items-center justify-between"><div class="flex items-center gap-2.5"><span class="avatar w-8 h-8 text-[11px]" style="background:#38BDF8">PV</span><div><p class="text-[12.5px] font-medium">Marketing Lead</p><p class="font-mono text-[11px]" style="color:var(--text-dim)">Vanik Homes · Real Estate</p></div></div><span class="tag tag-shipped">+2.1x</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROI -->
+  <section class="py-24 lg:py-32 border-t" style="border-color:var(--border); background:var(--bg-elev)">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal max-w-[560px] mb-14"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--teal)">ROI</span><h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">What a subscription replaces.</h2></div>
+      <div class="reveal-stagger grid md:grid-cols-3 gap-5">
+        <div class="card p-7"><p class="font-mono text-[11px] uppercase mb-3" style="color:var(--text-dim)">In-house hire</p><p class="font-display text-[32px] mb-1">₹90,000<span class="text-[14px] font-body" style="color:var(--text-muted)">/mo+</span></p><p class="text-[13px]" style="color:var(--text-muted)">Salary, tools, and management overhead for one designer.</p></div>
+        <div class="card p-7"><p class="font-mono text-[11px] uppercase mb-3" style="color:var(--text-dim)">Traditional agency</p><p class="font-display text-[32px] mb-1">₹1,50,000<span class="text-[14px] font-body" style="color:var(--text-muted)">/project</span></p><p class="text-[13px]" style="color:var(--text-muted)">Per-project retainer, plus 2–4 week turnarounds.</p></div>
+        <div class="card p-7" style="border-color:rgba(94,234,212,0.4)"><p class="font-mono text-[11px] uppercase mb-3" style="color:var(--teal)">SitePilot AI</p><p class="font-display text-[32px] mb-1">₹14,999<span class="text-[14px] font-body" style="color:var(--text-muted)">/mo</span></p><p class="text-[13px]" style="color:var(--text-muted)">Unlimited requests, cancel anytime, 1–3 day turnaround.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" class="py-24 lg:py-32">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal text-center max-w-[560px] mx-auto mb-16"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--teal)">Pricing</span><h2 class="font-display font-medium text-[32px] lg:text-[42px] tracking-tight mt-3">One flat subscription. Pause or cancel anytime.</h2><p class="text-[13px] font-mono mt-3" style="color:var(--text-dim)">Prices in INR, billed monthly.</p></div>
+
+      <div class="reveal-stagger grid lg:grid-cols-3 gap-6 items-start">
+
+        <div class="card tilt-card p-8">
+          <h3 class="font-display text-[18px] mb-1">Starter</h3>
+          <p class="text-[13.5px] mb-6" style="color:var(--text-muted)">Best for individuals and small businesses.</p>
+          <p class="font-display text-[38px] mb-1">₹1,599<span class="text-[15px] font-body" style="color:var(--text-muted)">/mo</span></p>
+          <p class="text-[12.5px] mb-7" style="color:var(--text-dim)">48–72 hour delivery</p>
+          <ul class="space-y-3 text-[13.5px] mb-8" style="color:var(--text-muted)">
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Unlimited website requests</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>One active request</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Unlimited revisions</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Website maintenance</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Basic SEO</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Mobile optimization</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>WhatsApp support</li>
+          </ul>
+          <a href="#book-call" class="btn-ghost btn-magnetic w-full text-center rounded-full py-3 text-[13.5px] block">Get Started</a>
+        </div>
+
+        <div class="card tilt-card p-8 relative" style="border-color:rgba(94,234,212,0.4); box-shadow:0 20px 60px -20px rgba(94,234,212,0.15)">
+          <span class="absolute -top-3 left-8 tag tag-shipped">Most Popular</span>
+          <h3 class="font-display text-[18px] mb-1">Growth</h3>
+          <p class="text-[13.5px] mb-6" style="color:var(--text-muted)">For teams shipping pages every week.</p>
+          <p class="font-display text-[38px] mb-1">₹2,999<span class="text-[15px] font-body" style="color:var(--text-muted)">/mo</span></p>
+          <p class="text-[12.5px] mb-7" style="color:var(--text-dim)">24–48 hour delivery</p>
+          <ul class="space-y-3 text-[13.5px] mb-8" style="color:var(--text-muted)">
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Everything in Starter</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Two active requests</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Priority support</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Landing pages</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>AI chatbot integration</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Advanced SEO</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Speed optimization</li>
+            <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Monthly updates &amp; performance reports</li>
+          </ul>
+          <a href="#book-call" class="btn-primary btn-magnetic w-full text-center rounded-full py-3 text-[13.5px] block">Start Growing</a>
+        </div>
+
+        <div class="glow-border-wrap relative">
+          <div class="card tilt-card p-8 relative h-full" style="border-color:transparent; background:var(--bg-card);">
+            <span class="absolute -top-3 left-8 tag" style="background:rgba(251,191,36,0.14); color:var(--amber); border:1px solid rgba(251,191,36,0.3)">Best Value</span>
+            <h3 class="font-display text-[18px] mb-1">E-Commerce</h3>
+            <p class="text-[13.5px] mb-6" style="color:var(--text-muted)">Shopify, WooCommerce, D2C &amp; online stores.</p>
+            <p class="font-display text-[38px] mb-1">₹6,999<span class="text-[15px] font-body" style="color:var(--text-muted)">/mo</span></p>
+            <p class="text-[12.5px] mb-7" style="color:var(--text-dim)">Priority delivery, unlimited requests</p>
+            <ul class="space-y-3 text-[13.5px] mb-8" style="color:var(--text-muted)">
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Everything in Growth</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Unlimited active requests</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Product &amp; collection page design</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Checkout &amp; CRO optimization</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Payment gateway support</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Promo &amp; email marketing pages</li>
+              <li class="flex gap-2"><i data-lucide="check" class="w-4 h-4 shrink-0" style="color:var(--teal)"></i>Analytics dashboard &amp; dedicated support</li>
+            </ul>
+            <a href="#book-call" class="btn-primary btn-magnetic w-full text-center rounded-full py-3 text-[13.5px] block">Scale Your Store</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- monthly savings vs agency -->
+      <div class="reveal card p-7 lg:p-8 mt-10">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <h3 class="font-display text-[17px]">What you'd pay an agency for the same, month over month</h3>
+          <span class="tag tag-shipped">You save up to 92%</span>
+        </div>
+        <div class="space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-1.5 text-[12.5px] font-mono" style="color:var(--text-muted)"><span>Traditional agency retainer</span><span>₹35,000/mo</span></div>
+            <div class="w-full h-2.5 rounded-full" style="background:rgba(255,255,255,0.06)"><div class="h-2.5 rounded-full" style="width:100%; background:#3a4150"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1.5 text-[12.5px] font-mono" style="color:var(--text-muted)"><span>SitePilot AI — Growth</span><span style="color:var(--teal)">₹2,999/mo</span></div>
+            <div class="w-full h-2.5 rounded-full" style="background:rgba(255,255,255,0.06)"><div class="h-2.5 rounded-full" style="width:9%; background:linear-gradient(90deg,#5EEAD4,#38BDF8)"></div></div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between mb-1.5 text-[12.5px] font-mono" style="color:var(--text-muted)"><span>SitePilot AI — E-Commerce</span><span style="color:var(--amber)">₹6,999/mo</span></div>
+            <div class="w-full h-2.5 rounded-full" style="background:rgba(255,255,255,0.06)"><div class="h-2.5 rounded-full" style="width:20%; background:linear-gradient(90deg,#FBBF24,#38BDF8)"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- trust badges -->
+      <div class="reveal-stagger flex flex-wrap justify-center gap-3 mt-8">
+        <span class="badge-pill"><i data-lucide="check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>No Setup Fee</span>
+        <span class="badge-pill"><i data-lucide="check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>Cancel Anytime</span>
+        <span class="badge-pill"><i data-lucide="check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>Unlimited Revisions</span>
+        <span class="badge-pill"><i data-lucide="check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>GST Invoice Available</span>
+        <span class="badge-pill"><i data-lucide="check" class="w-3.5 h-3.5" style="color:var(--teal)"></i>Fast Turnaround</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-24 lg:py-32 border-t" style="border-color:var(--border)">
+    <div class="max-w-[760px] mx-auto px-6 lg:px-8">
+      <div class="reveal text-center mb-14"><span class="font-mono text-[11.5px] uppercase tracking-wider" style="color:var(--sky)">FAQ</span><h2 class="font-display font-medium text-[32px] tracking-tight mt-3">Common questions</h2></div>
+      <div class="reveal-stagger space-y-3" id="faq-list">
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">How fast are requests actually turned around?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">Most first drafts land within 24–48 hours depending on scope and plan. Larger builds are broken into shippable pieces so you see progress daily instead of waiting for one big reveal.</p></div></div>
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">What if I need two things at once?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">Add anything to your queue — it's picked up in order. Growth and Scale plans run two or more requests in parallel, so nothing sits waiting behind a single task.</p></div></div>
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">Do you work with our existing codebase?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">Yes. We can build inside your current stack or start fresh on Next.js — either way, you keep full ownership and export access to everything we ship.</p></div></div>
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">Can I pause or cancel?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">Anytime, from your account settings. Pausing keeps your history and assets intact so restarting doesn't mean starting over.</p></div></div>
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">How do I pay, and is GST included?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">All plans are billed in INR via card, UPI, or bank transfer. GST is added at checkout and shown on every invoice.</p></div></div>
+        <div class="acc-item card px-6 py-1 cursor-pointer"><button class="w-full flex items-center justify-between py-4 text-left"><span class="font-display text-[15.5px]">Can I talk to someone before subscribing?</span><i data-lucide="plus" class="w-4 h-4 shrink-0 acc-chevron"></i></button><div class="acc-panel"><p class="pb-5 text-[14px] leading-relaxed" style="color:var(--text-muted)">Yes — book a 15-minute call and we'll map your first few requests before you commit to a plan.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="book-call" class="py-24 lg:py-28">
+    <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+      <div class="reveal relative rounded-[28px] overflow-hidden p-12 lg:p-20 text-center" style="background:var(--bg-card); border:1px solid var(--border)">
+        <div class="absolute inset-0 bg-grid opacity-60"></div>
+        <div class="relative">
+          <h2 class="font-display font-medium text-[32px] lg:text-[46px] tracking-tight max-w-[680px] mx-auto">Your next website request could be in progress by tonight.</h2>
+          <p class="mt-5 text-[16px] max-w-[480px] mx-auto" style="color:var(--text-muted)">No contracts longer than a month. Cancel whenever the queue empties out.</p>
+          <div class="flex flex-wrap items-center justify-center gap-4 mt-9">
+            <a href="#pricing" class="btn-primary btn-magnetic inline-flex items-center gap-2 rounded-full px-7 py-4 text-[15px]">Start your subscription <i data-lucide="arrow-right" class="w-4 h-4"></i></a>
+            <a href="https://calendly.com" target="_blank" rel="noopener" class="btn-ghost btn-magnetic inline-flex items-center gap-2 rounded-full px-7 py-4 text-[15px]"><i data-lucide="calendar" class="w-4 h-4"></i> Book a 15-min call</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="border-t py-16" style="border-color:var(--border)">
+  <div class="max-w-[1320px] mx-auto px-6 lg:px-8">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
+      <div class="lg:col-span-2">
+        <a href="#top" class="flex items-center gap-2.5 mb-4"><span class="w-7 h-7 rounded-lg grad-bg flex items-center justify-center"><i data-lucide="navigation" class="w-4 h-4" style="color:#061014"></i></span><span class="font-display font-semibold text-[15px]">SitePilot AI</span></a>
+        <p class="text-[13.5px] max-w-[280px] leading-relaxed" style="color:var(--text-muted)">Your on-demand website team — design, development, and maintenance, one subscription at a time.</p>
+      </div>
+      <div><p class="font-mono text-[11px] uppercase tracking-wider mb-4" style="color:var(--text-dim)">Product</p><ul class="space-y-2.5 text-[13.5px]" style="color:var(--text-muted)"><li><a href="#services" class="hover:text-white transition-colors">Services</a></li><li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li><li><a href="#work" class="hover:text-white transition-colors">Work</a></li></ul></div>
+      <div><p class="font-mono text-[11px] uppercase tracking-wider mb-4" style="color:var(--text-dim)">Company</p><ul class="space-y-2.5 text-[13.5px]" style="color:var(--text-muted)"><li><a href="#" class="hover:text-white transition-colors">About</a></li><li><a href="#work" class="hover:text-white transition-colors">Portfolio</a></li><li><a href="#" class="hover:text-white transition-colors">Blog</a></li><li><a href="#book-call" class="hover:text-white transition-colors">Contact</a></li></ul></div>
+      <div><p class="font-mono text-[11px] uppercase tracking-wider mb-4" style="color:var(--text-dim)">Legal</p><ul class="space-y-2.5 text-[13.5px]" style="color:var(--text-muted)"><li><a href="#" class="hover:text-white transition-colors">Privacy policy</a></li><li><a href="#" class="hover:text-white transition-colors">Terms</a></li></ul></div>
+    </div>
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t" style="border-color:var(--border)">
+      <p class="text-[12.5px] font-mono" style="color:var(--text-dim)">© 2026 SitePilot AI. All rights reserved.</p>
+      <div class="flex items-center gap-4"><a href="#" style="color:var(--text-muted)" class="hover:text-white transition-colors"><i data-lucide="twitter" class="w-4 h-4"></i></a><a href="#" style="color:var(--text-muted)" class="hover:text-white transition-colors"><i data-lucide="linkedin" class="w-4 h-4"></i></a><a href="#" style="color:var(--text-muted)" class="hover:text-white transition-colors"><i data-lucide="github" class="w-4 h-4"></i></a></div>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY BOOK A CALL -->
+<a href="#book-call" id="sticky-cta" class="sticky-cta btn-primary btn-magnetic rounded-full px-5 py-3.5 text-[13.5px] inline-flex items-center gap-2 shadow-lg">
+  <i data-lucide="calendar" class="w-4 h-4"></i> Book a call
+</a>
+
+<script>
+  lucide.createIcons();
+
+  const nav = document.getElementById('nav');
+  const progress = document.getElementById('scroll-progress');
+  const stickyCta = document.getElementById('sticky-cta');
+  const cursorGlow = document.getElementById('cursor-glow');
+
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 12);
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = pct + '%';
+    stickyCta.classList.toggle('hidden-cta', window.scrollY < 500);
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    cursorGlow.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
+  });
+
+  const menuBtn = document.getElementById('menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  menuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal, .reveal-stagger, .mask-line').forEach(el => io.observe(el));
+
+  document.querySelectorAll('.acc-item').forEach(item => {
+    item.querySelector('button').addEventListener('click', () => {
+      const wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.acc-item.open').forEach(i => i.classList.remove('open'));
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  const heroGlow = document.getElementById('hero-glow');
+  const heroSection = heroGlow.closest('section');
+  heroSection.addEventListener('mousemove', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    heroGlow.style.setProperty('--x', (e.clientX - rect.left) + 'px');
+    heroGlow.style.setProperty('--y', (e.clientY - rect.top) + 'px');
+  });
+
+  // 3D tilt cards
+  document.querySelectorAll('.tilt-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX - r.left) / r.width - 0.5;
+      const py = (e.clientY - r.top) / r.height - 0.5;
+      card.style.transform = `perspective(800px) rotateX(${(-py*6).toFixed(2)}deg) rotateY(${(px*6).toFixed(2)}deg) scale(1.015)`;
+    });
+    card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(800px) rotateX(0) rotateY(0) scale(1)'; });
+  });
+
+  // magnetic buttons
+  document.querySelectorAll('.btn-magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = (e.clientX - r.left - r.width/2) * 0.28;
+      const y = (e.clientY - r.top - r.height/2) * 0.28;
+      btn.style.transform = `translate(${x}px, ${y}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = 'translate(0,0)'; });
+  });
+
+  // animated counters
+  const counters = document.querySelectorAll('.counter');
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.target);
+      const duration = 1200;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.floor(eased * target);
+        if (p < 1) requestAnimationFrame(tick); else el.textContent = target;
+      }
+      requestAnimationFrame(tick);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => counterIO.observe(c));
+
+  // stacked card scroll (GSAP + ScrollTrigger)
+  if (window.gsap && window.ScrollTrigger) {
+    gsap.registerPlugin(ScrollTrigger);
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const stackCards = gsap.utils.toArray('#work .stack-card');
+    if (stackCards.length && !reduceMotion) {
+      gsap.set(stackCards, { yPercent: 100, opacity: 1, scale: 1, filter: 'blur(0px)' });
+      gsap.set(stackCards[0], { yPercent: 0 });
+
+      const stackTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: '#work',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        }
+      });
+
+      stackCards.forEach((card, i) => {
+        if (i === 0) return;
+        const prevCard = stackCards[i - 1];
+        stackTl
+          .to(prevCard, { scale: 0.96, opacity: 0.55, filter: 'blur(2px)', ease: 'none', duration: 1 }, i - 1)
+          .to(card, { yPercent: 0, ease: 'none', duration: 1 }, i - 1);
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
